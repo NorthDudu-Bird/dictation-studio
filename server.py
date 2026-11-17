@@ -26,11 +26,24 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urllib.parse.urlsplit(self.path)
+        if parsed.path == "/runtime-config.js":
+            body = b"window.DICTATION_AUDIO_PROXY = true;\n"
+            self.send_response(200)
+            self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if parsed.path == "/api/audio":
             url = urllib.parse.parse_qs(parsed.query).get("url", [""])[0]
-            target = urllib.parse.urlsplit(url)
+            try:
+                target = urllib.parse.urlsplit(url)
+                port = target.port
+            except ValueError:
+                self.send_error(400, "Invalid audio URL")
+                return
             if (target.scheme != "https" or target.hostname not in ALLOWED
-                    or target.port not in (None, 443) or target.username
+                    or port not in (None, 443) or target.username
                     or not target.path.startswith(ALLOWED.get(target.hostname, "!"))):
                 self.send_error(400, "Unsupported audio host")
                 return
@@ -52,7 +65,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_error(502, "Audio unavailable")
             return
         # Only serve public application assets, never code, dotfiles or backups.
-        if parsed.path not in ("/", "/index.html", "/app.js", "/styles.css", "/bundled-data.js"):
+        if parsed.path not in ("/", "/index.html", "/app.js", "/styles.css", "/bundled-data.js", "/examples/words.csv", "/examples/words.json"):
             self.send_error(404)
             return
         super().do_GET()

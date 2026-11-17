@@ -1,0 +1,7 @@
+{
+  "words": [
+    {"term": "accommodation", "meaning": "住宿", "category": "旅行"},
+    {"term": "colour", "meaning": "颜色", "category": "基础", "aliases": ["color"]},
+    {"term": "renewable energy", "meaning": "可再生能源", "category": "自然"}
+  ]
+}
