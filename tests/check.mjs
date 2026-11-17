@@ -18,6 +18,7 @@ assert(run("parseWords('term,meaning\\nhello,\"你好,问候\"','csv')[0].meanin
 assert(run("parseWords('term\\tmeaning\\nhello\\t你好','tsv')[0].term==='hello'"));
 assert.equal(run("parseWords('hello\\nworld','txt').length"),2);
 assert(run("accepted('color',{term:'colour',aliases:[]})"));
+assert(run("audioCandidates({term:'Monday',audio:''}).find(c=>c.label.startsWith('Google')).url.includes('/monday--_')"));
 assert(run("accepted('pits',{term:'pit(s)',aliases:[]})"));
 assert(run("esc('<img src=x>')==='&lt;img src=x&gt;'"));
 assert.throws(()=>run("parseWords('term,meaning\\nhello,\"unclosed','csv')"));
